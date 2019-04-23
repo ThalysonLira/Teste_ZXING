@@ -8,11 +8,13 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Camera
 import android.os.Build
+import android.widget.TextView
 import com.google.zxing.Result
 
 import kotlinx.android.synthetic.main.content_zxing.*
 import me.dm7.barcodescanner.core.CameraUtils
 import me.dm7.barcodescanner.zxing.ZXingScannerView
+import org.w3c.dom.Text
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.EasyPermissions.requestPermissions
 import pub.devrel.easypermissions.PermissionRequest
@@ -20,11 +22,14 @@ import pub.devrel.easypermissions.PermissionRequest
 class ZxingActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,ZXingScannerView.ResultHandler {
 
     val REQUEST_CODE_CAMERA = 182;
+    private var txtResult: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 //        val zXingScannerView = ZXingScannerView(this)
+
+        txtResult = findViewById(R.id.txtResult)
 
         setContentView(R.layout.content_zxing)
         askCameraPermission()
@@ -87,6 +92,8 @@ class ZxingActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,Z
         Log.i("LOG", "Formato do código lido: ${result.barcodeFormat.name}")
 
         z_xing_scenner.resumeCameraPreview ( this )
+
+        txtResult?.text = result.toString()
     }
 
     fun ZXingScannerView.isFlashSupported(context: Context)= context
