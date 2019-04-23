@@ -16,8 +16,9 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Abrindo Camera", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
+            setContentView(R.layout.content_zxing)
         }
     }
 
@@ -35,5 +36,9 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    fun showZXing(){
+
     }
 }

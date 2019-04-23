@@ -1,20 +1,21 @@
 package com.mobile.thalyson.teste_zxing
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.hardware.Camera
+import android.os.Build
 import com.google.zxing.Result
 
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_zxing.*
+import me.dm7.barcodescanner.core.CameraUtils
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.EasyPermissions.requestPermissions
 import pub.devrel.easypermissions.PermissionRequest
-import java.util.jar.Manifest
 
 class ZxingActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,ZXingScannerView.ResultHandler {
 
@@ -54,13 +55,49 @@ class ZxingActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,Z
     override fun onResume() {
         super.onResume()
 
-        z_xing_scenner.setResultHandler { this }
+        z_xing_scenner.setResultHandler ( this )
+
+        // Para dispositivos HUAWEI
+        val brand = Build.MANUFACTURER
+        if(brand.equals("HUAWEI", true)) {
+            z_xing_scenner.setAspectTolerance(0.5F)
+        }
+
+        z_xing_scenner.startCamera()
+
+        // Alterar cores da borda, linha e fundo
+//        z_xing_scenner.setBorderColor(Color.RED)
+//        z_xing_scenner.setLaserColor(Color.YELLOW)
+//        z_xing_scenner.setMaskColor(Color.BLACK)
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        z_xing_scenner.stopCamera()
+
+        val camera = CameraUtils.getCameraInstance()
+        if(camera != null)
+            (camera as Camera).release()
     }
 
     override fun handleResult(result: Result?) {
         Log.i("LOG", "Conteúdo do código lido: ${result!!.text}")
         Log.i("LOG", "Formato do código lido: ${result.barcodeFormat.name}")
 
-        z_xing_scenner.resumeCameraPreview { this }
+        z_xing_scenner.resumeCameraPreview ( this )
+    }
+
+    fun ZXingScannerView.isFlashSupported(context: Context)= context
+        .packageManager
+        .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)
+
+    fun enableFlash(context: Context,
+    zXing: ZXingScannerView,
+    status: Boolean){
+        if(zXing.isFlashSupported(context)){
+            zXing.flash = status
+        }
     }
 }
